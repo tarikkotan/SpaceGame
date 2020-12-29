@@ -1,21 +1,34 @@
 import os
 import pygame
 import pygame_menu
+from pygame_menu import sound
 import pygame
 import random
 import math
-from pygame import mixer
+from pygame import mixer 
+from pygame_menu.widgets.core.widget import Widget
+from pygame_menu.sound import SOUND_TYPE_CLOSE_MENU
 
 pygame.init()
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 surface = pygame.display.set_mode((800, 600))
 
+missile_Sound = mixer.Sound("fire.wav")
+explosion_Sound = mixer.Sound("explosion.wav")
+mixer.music.load("background.wav")
+mixer.music.play(-1)
 
-def set_difficulty(selected, value):
-    """
-    Set the difficulty of the game.
-    """
-    print('Set difficulty to {} ({})'.format(selected[0], value))
+
+
+def soundOff():
+    pygame.mixer.music.set_volume(0)
+    missile_Sound.set_volume(0)
+    explosion_Sound.set_volume(0)
+    
+def soundOn():
+    pygame.mixer.music.set_volume(1)
+    explosion_Sound.set_volume(1)
+    missile_Sound.set_volume(1)
 
 
 def start_the_game():
@@ -25,9 +38,7 @@ def start_the_game():
     background = pygame.image.load("background.png")
 
     #Background Sound
-    mixer.music.load("background.wav")
-    mixer.music.play(-1)
-
+    
     #Title and Icon
     pygame.display.set_caption("Uzay Macerası")
     icon = pygame.image.load("radiation.png")
@@ -125,7 +136,6 @@ def start_the_game():
                     playerX_change = 4
                 if event.key == pygame.K_SPACE:
                     if missile_state == "ready":
-                        missile_Sound = mixer.Sound("fire.wav")
                         missile_Sound.play()
                         missileX = playerX
                         fire_missile(missileX,missileY)
@@ -164,7 +174,7 @@ def start_the_game():
             # Collision
             collision = isCollision(enemyX[i],enemyY[i],missileX,missileY)
             if collision:
-                explosion_Sound = mixer.Sound("explosion.wav")
+                
                 explosion_Sound.play()
                 missileY = 480
                 missile_state ="ready"
@@ -195,7 +205,10 @@ menu = pygame_menu.Menu(height=300,
 
 
 menu.add_button('Play', start_the_game)
+menu.add_button('Turn Off Sound',soundOff)
+menu.add_button('Turn On Sound',soundOn)
 menu.add_button('Quit', pygame_menu.events.EXIT)
+
 
 if __name__ == '__main__':
     menu.mainloop(surface)
